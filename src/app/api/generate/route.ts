@@ -27,11 +27,23 @@ Respond with ONLY valid JSON, no markdown code blocks:
 {"name":"THE NAME","tagline":"Deadpan description of why it's unbearable.","fillings":"ingredient one, ingredient two, ingredient three, bagel type"}`;
 
 export async function POST() {
-  const apiKey = process.env.Anhropic ?? process.env.ANTHROPIC_API_KEY;
+  const apiKey =
+    process.env.Anhropic ??
+    process.env.Anthropic ??
+    process.env.ANTHROPIC_API_KEY ??
+    process.env.ANTHROPIC_KEY;
 
   if (!apiKey) {
+    const found = Object.keys(process.env).filter((k) =>
+      k.toLowerCase().includes("anthrop")
+    );
     return NextResponse.json(
-      { error: "API key not set — add it in Vercel → Settings → Environment Variables" },
+      {
+        error: "API key not found",
+        hint: found.length
+          ? `Found these matching vars: ${found.join(", ")} — update the route to use the correct name`
+          : "No env var containing 'anthrop' found — check Vercel → Settings → Environment Variables",
+      },
       { status: 500 }
     );
   }
