@@ -27,9 +27,11 @@ Respond with ONLY valid JSON, no markdown code blocks:
 {"name":"THE NAME","tagline":"Deadpan description of why it's unbearable.","fillings":"ingredient one, ingredient two, ingredient three, bagel type"}`;
 
 export async function POST() {
-  if (!process.env.ANTHROPIC_API_KEY) {
+  const apiKey = process.env.Anhropic ?? process.env.ANTHROPIC_API_KEY;
+
+  if (!apiKey) {
     return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY is not set — add it in Vercel → Settings → Environment Variables" },
+      { error: "API key not set — add it in Vercel → Settings → Environment Variables" },
       { status: 500 }
     );
   }
@@ -38,7 +40,7 @@ export async function POST() {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "x-api-key": apiKey,
         "anthropic-version": "2023-06-01",
         "content-type": "application/json",
       },
